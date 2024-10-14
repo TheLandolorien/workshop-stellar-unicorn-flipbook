@@ -1,26 +1,32 @@
 import time
+import paint_opener
 
-import pngdec
-from stellar import StellarUnicorn
-from picographics import PicoGraphics, DISPLAY_STELLAR_UNICORN
+NUM_FRAMES = 2
+FLIPBOOK_NAME = "cross"
+SPEED = 0.125 # Second(s)
 
-NUM_FRAMES = 4
-FLIPBOOK_NAME = ""
+graphics = None
+n = 1
 
-su = StellarUnicorn()
-graphics = PicoGraphics(display=DISPLAY_STELLAR_UNICORN)
+def init():
+    paint_opener.graphics = graphics
 
-p = pngdec.PNG(graphics)
-
-n = 0
-while True:
+def draw():
+    global n
     if n > NUM_FRAMES:
-        n = 0
+        n = 1
+    paint_opener.draw(filename=f"{FLIPBOOK_NAME}_{n}")
 
-    p.open_file(f"{FLIPBOOK_NAME}_{n}.png")
-    p.decode(0, 0)
-
-    time.sleep(1)
-    su.update(graphics)
+    time.sleep(SPEED)
 
     n += 1
+
+if __name__ == '__main__':
+    from stellar import StellarUnicorn
+    from picographics import PicoGraphics, DISPLAY_STELLAR_UNICORN
+    stellar = StellarUnicorn()
+    graphics = PicoGraphics(DISPLAY_STELLAR_UNICORN)
+    while True:
+        init()
+        draw()
+        stellar.update(graphics)

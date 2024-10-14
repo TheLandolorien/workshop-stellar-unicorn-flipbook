@@ -47,4 +47,19 @@ And ta-da! You're ready to start coding a Stellar Unicorn! :tada:
 
 ## :movie_camera: Creating a Flipbook
 
-TBD
+1. Open and run [`stellar_paint.py`](./stellar_paint.py).
+1. Copy and paste the generated link in your browser.
+1. Create an image.
+1. Save the image with the format: `<FLIPBOOK_NAME>_<N>`, where:
+    1. `<FLIPBOOK_NAME>` is the name of your flipbook (e.g., `cross`)
+    1. `<N>` is the frame number (e.g., `2`)
+1. Create another image that could would make it look like your previous frame moved. Save that image as well.
+1. Stop the script.
+1. Open and run [`flipbook.py`](./flipbook.py)
+1. Watch your animation!
+
+### Challenge
+
+1. (Easy) Update your flipbook to move faster or slower.
+1. (Medium) Create a flipbook with at least 5 frames.
+1. (Hard) Program your flipbook to start from the A, B, C, or D button.
