@@ -24,3 +24,8 @@ user.props
 
 # MacOS desktop metadata files
 .DS_Store
+
+# Wi-Fi Credentials
+WIFI_CONFIG.py
+
+.vscode/
