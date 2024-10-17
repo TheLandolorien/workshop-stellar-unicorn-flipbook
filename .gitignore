@@ -29,3 +29,5 @@ user.props
 WIFI_CONFIG.py
 
 .vscode/
+
+.micropico
