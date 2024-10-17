@@ -1,14 +1,33 @@
+import struct
+from stellar import StellarUnicorn
+
+STRUCT_FMT = 'BBBx'
+STRUCT_LEN = struct.calcsize(STRUCT_FMT)
+
 graphics = None
+
+def read_chunks(f):
+    while True:
+        chunk = f.read(STRUCT_LEN)
+        if not chunk:
+            break
+        yield chunk
 
 def load(filename: str):
     with open(f"saves/{filename}.bin", mode="rb") as f:
-        image_data = f.read()
+        chunks = [struct.unpack(STRUCT_FMT, chunk) for chunk in read_chunks(f)]
     
-    return image_data
+    return chunks
 
 def draw(filename: str):
-    image = load(filename=filename)
-    for i in range(len(image), 0, -4):
-        r, g, b, _ = image[i - 4:i]
-        graphics.set_pen(graphics.create_pen(r, g, b))
-        graphics.pixel((len(image) - i) // 64, (len(image) - i) // 4 % 16)
+    content = load(filename=filename)
+    width = StellarUnicorn.WIDTH
+    height = StellarUnicorn.HEIGHT
+
+    pixels = [content[i:i+width] for i in range(0, len(content), width)]
+
+    for i in range(width):
+        for j in range(height):
+            b, g, r = pixels[i][j]
+            graphics.set_pen(graphics.create_pen(r, g, b))
+            graphics.pixel(i, j)

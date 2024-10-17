@@ -3,7 +3,7 @@ import paint_opener
 
 NUM_FRAMES = 2
 FLIPBOOK_NAME = "cross"
-SPEED = 0.125 # Second(s)
+WAIT = 1.0 # Second(s)
 
 graphics = None
 n = 1
@@ -17,7 +17,7 @@ def draw():
         n = 1
     paint_opener.draw(filename=f"{FLIPBOOK_NAME}_{n}")
 
-    time.sleep(SPEED)
+    time.sleep(WAIT)
 
     n += 1
 
