@@ -36,10 +36,13 @@ $(document).ready(function () {
   $('.tools li').on('click', function () {
     switch ($(this).index()) {
       case 6:
-        clear();
+        open();
         break;
       case 7:
         save();
+        break;
+      case 8:
+        clear();
         break;
       default:
         $('.tools li').removeClass('selected');
@@ -137,6 +140,22 @@ $(document).ready(function () {
     socket.send('save');
     socket.send(filename);
   }
+  
+  function open() {
+    var filename = prompt('Please enter a filename', 'mypaint');
+    filename = filename.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    socket.send('open');
+    socket.send(filename);
+  }
+  
+  function draw_opened(pixels) {
+    var objs = $('td');
+    for (let i = 0; i < objs.length; i++) {
+        let rgb = ['r', 'g', 'b'].reduce((rgb, v, idx) => ({ ...rgb, [v]: pixels[i][idx]}), {});
+        $(objs[i]).css('background-color', tinycolor(rgb).toRgbString()).data('changed', false);
+    }
+    socket.send('show');
+  }
 
   function clear() {
     $('td').css('background-color', 'rgb(0,0,0)').data('changed', false);
@@ -205,10 +224,12 @@ $(document).ready(function () {
 
   const socket = new WebSocket('ws://' + window.location.host + '/paint');
   socket.addEventListener('message', (ev) => {
-    console.log('<<< ' + ev.data);
-
     if (ev.data.substring(0, 6) == 'alert:') {
       alert(ev.data.substring(6));
+    } else if (ev.data.substring(0, 5) == 'draw:') {
+      draw_opened(JSON.parse(ev.data.substring(5)));
+    } else {
+      console.log('<<< ' + ev.data);
     }
   });
   socket.addEventListener('close', (ev) => {

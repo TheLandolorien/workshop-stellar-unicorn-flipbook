@@ -15,19 +15,25 @@ def read_chunks(f):
 
 def load(filename: str):
     with open(f"saves/{filename}.bin", mode="rb") as f:
-        chunks = [struct.unpack(STRUCT_FMT, chunk) for chunk in read_chunks(f)]
+        chunks = [list(reversed(struct.unpack(STRUCT_FMT, chunk))) for chunk in read_chunks(f)]
     
     return chunks
 
 def draw(filename: str):
     content = load(filename=filename)
-    width = StellarUnicorn.WIDTH
-    height = StellarUnicorn.HEIGHT
 
-    pixels = [content[i:i+width] for i in range(0, len(content), width)]
-
-    for i in range(width):
-        for j in range(height):
-            b, g, r = pixels[i][j]
+    for i in range(StellarUnicorn.HEIGHT):
+        for j in range(StellarUnicorn.WIDTH):
+            r, g, b = content[j * StellarUnicorn.WIDTH + i]
             graphics.set_pen(graphics.create_pen(r, g, b))
             graphics.pixel(i, j)
+    return content
+
+if __name__ == "__main__":
+    from picographics import PicoGraphics, DISPLAY_STELLAR_UNICORN
+    stellar = StellarUnicorn()
+    graphics = PicoGraphics(DISPLAY_STELLAR_UNICORN)
+
+    draw(filename="calibration")
+
+    stellar.update(graphics)

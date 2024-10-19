@@ -1,11 +1,14 @@
 import os
+import json
+
 from microdot import Microdot, send_file
 from microdot.websocket import with_websocket
 from phew import connect_to_wifi
 from stellar import StellarUnicorn
 from picographics import PicoGraphics, DISPLAY_STELLAR_UNICORN as DISPLAY
-from WIFI_CONFIG import SSID, PSK
 
+import paint_opener
+from WIFI_CONFIG import SSID, PSK
 
 su = StellarUnicorn()
 graphics = PicoGraphics(DISPLAY)
@@ -94,9 +97,11 @@ async def echo(request, ws):
                 graphics.set_pen(graphics.create_pen(r, g, b))
                 flood_fill(x, y, r, g, b)
 
-            if data == "clear":
-                graphics.set_pen(graphics.create_pen(0, 0, 0))
-                graphics.clear()
+            if data == "open":
+                filename = await ws.receive()
+                paint_opener.graphics = graphics
+                pixels = paint_opener.draw(filename=filename)
+                await ws.send(f'draw:{json.dumps(pixels)}', 1)
 
             if data == "save":
                 filename = await ws.receive()
@@ -109,5 +114,8 @@ async def echo(request, ws):
                     f.write(graphics)
                 await ws.send(f"alert: Saved to saves/{filename}.bin")
 
+            if data == "clear":
+                graphics.set_pen(graphics.create_pen(0, 0, 0))
+                graphics.clear()
 
 server.run(host="0.0.0.0", port=80)
